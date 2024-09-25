@@ -1,0 +1,125 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Material+Icons:wght@400&display=swap");
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
+
+@import url('https://fonts.googleapis.com/css2?family=Russo+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Creepster&family=Orbitron:wght@400..900&family=Pirata+One&family=Russo+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&display=swap');
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Madu';
+  src: url('/src/assets/4u-Madu.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@layer base {
+  html {
+      font-family: 'Madu', sans-serif;
+  }
+}
+
+body {
+  @apply leading-[normal] m-0;
+}
+
+*,
+::before,
+::after {
+  border-width: 0;
+}
+
+.step-item {
+  @apply relative flex flex-col justify-center items-center w-[150px] sm:w-[200px] md:w-[200px] lg:w-[200px];
+}
+
+.step-item::before {
+  @apply content-[''] bg-[#535763] absolute w-[87px] sm:w-[200px] md:w-[200px] lg:w-[200px] h-[3px] right-2/4 top-1/2 -translate-y-2/4;
+}
+
+.step-item::after {
+  @apply content-[''] bg-[#535763] absolute w-[87px] sm:w-[200px] md:w-[200px] lg:w-[200px] h-[3px] left-2/4 top-1/2 -translate-y-2/4;
+}
+
+.step {
+  @apply w-[40px] h-[40px] sm:w-[50px] sm:h-[50px] md:w-[50px] md:h-[50px] lg:w-[50px] lg:h-[50px] flex items-center justify-center z-10 relative bg-[#535763] rounded-full font-semibold text-white;
+}
+
+.active .step, .completed .step {
+  @apply bg-[#49C8B7];
+}
+
+.active::before,
+.active::after {
+  @apply bg-[#49C8B7];
+}
+
+.completed::before,
+.completed::after {
+  @apply bg-[#49C8B7];
+}
+
+.bg-dark-blue {
+  background-color: #010f1d; /* Dark Blue */
+}
+
+.no-scroll {
+  overflow: hidden;
+  height: 100vh; /* Optional: Ensure the element takes up the full viewport height */
+}
+
+.border-box {
+  border: 2px solid rgb(163, 160, 160); /* Changed from border-right to border */
+  padding-left: 10px;
+  border-radius: 6px;
+  margin-top: 4px;
+
+}
+
+.inner-box {
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 40px;
+  padding-right: 10px;
+}
+
+.white-text {
+  color: #fff;
+}
+
+.gray-text {
+  color: #cac8c8;
+}
+
+.icon {
+  margin-top: -20px;
+}
+
+.russo-one-regular {
+  font-family: "Russo One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.black-ops-one-regular {
+  font-family: "Black Ops One", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.dm-serif-text-regular {
+  font-family: "DM Serif Text", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+
+
+
