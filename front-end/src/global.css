@@ -1,0 +1,195 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Material+Icons:wght@400&display=swap");
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
+
+@import url('https://fonts.googleapis.com/css2?family=Russo+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Creepster&family=Orbitron:wght@400..900&family=Pirata+One&family=Russo+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&display=swap');
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Madu';
+  src: url('/src/assets/4u-Madu.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@layer base {
+  html {
+      font-family: 'Madu', sans-serif;
+  }
+}
+
+body {
+  @apply leading-[normal] m-0;
+}
+
+*,
+::before,
+::after {
+  border-width: 0;
+}
+
+.step-item {
+  @apply relative flex flex-col justify-center items-center w-[150px] sm:w-[200px] md:w-[200px] lg:w-[200px];
+}
+
+.step-item::before {
+  @apply content-[''] bg-[#535763] absolute w-[87px] sm:w-[200px] md:w-[200px] lg:w-[200px] h-[3px] right-2/4 top-1/2 -translate-y-2/4;
+}
+
+.step-item::after {
+  @apply content-[''] bg-[#535763] absolute w-[87px] sm:w-[200px] md:w-[200px] lg:w-[200px] h-[3px] left-2/4 top-1/2 -translate-y-2/4;
+}
+
+.step {
+  @apply w-[40px] h-[40px] sm:w-[50px] sm:h-[50px] md:w-[50px] md:h-[50px] lg:w-[50px] lg:h-[50px] flex items-center justify-center z-10 relative bg-[#535763] rounded-full font-semibold text-white;
+}
+
+.active .step, .completed .step {
+  @apply bg-[#49C8B7];
+}
+
+.active::before,
+.active::after {
+  @apply bg-[#49C8B7];
+}
+
+.completed::before,
+.completed::after {
+  @apply bg-[#49C8B7];
+}
+
+.bg-dark-blue {
+  background-color: #010f1d; /* Dark Blue */
+}
+
+.no-scroll {
+  overflow: hidden;
+  height: 100vh; /* Optional: Ensure the element takes up the full viewport height */
+}
+
+.border-box {
+  border: 2px solid rgb(163, 160, 160); /* Changed from border-right to border */
+  padding-left: 10px;
+  border-radius: 6px;
+  margin-top: 4px;
+
+}
+
+.inner-box {
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 40px;
+  padding-right: 10px;
+}
+
+.white-text {
+  color: #fff;
+}
+
+.gray-text {
+  color: #cac8c8;
+}
+
+.icon {
+  margin-top: -20px;
+}
+
+.russo-one-regular {
+  font-family: "Russo One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.black-ops-one-regular {
+  font-family: "Black Ops One", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.dm-serif-text-regular {
+  font-family: "DM Serif Text", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.modal-custom-bg .ant-modal-content {
+  background-color: #183350; /* Replace with your desired color */
+}
+.modal-custom-bg .ant-modal-title {
+  background-color: #183350; /* Change the title text color */
+  color:azure
+}
+
+.custom-modal .ant-modal-close-x {
+  color: #09dee6; /* Change the color to whatever you prefer */
+}
+
+/* Add this in your CSS file */
+.ant-input::placeholder {
+  color: #9c9c9c !important;
+}
+
+html, body, #root {
+  height: 100%; /* Ensure the body and html take up the full viewport height */
+  margin: 0;
+  padding: 0;
+  background-color:#010f1d; 
+  
+}
+
+/* Optional: If you're using a main container, style it accordingly */
+.container {
+  height: 100%;
+  background-color: #1d3557; /* Ensure container takes up full height */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Background color for the entire table */
+.custom-table .ant-table {
+  height: 100%; /* Let the table take full available height */
+  background-color: transparent; /* Ensure the background doesn't conflict */
+}
+
+.custom-table .ant-table-wrapper {
+  height: 100%;
+  background-color: #1d3557; /* Remaining space matches header */
+  overflow-y: auto; /* Allow vertical scrolling if necessary */
+}
+
+/* Background color for the header */
+.custom-table .ant-table-thead > tr > th {
+   /* Darker blue for the header */
+  background-color: #2a9d8f;
+  color: white; /* Header text color */
+}
+
+/* Background color for the rows */
+.custom-table .ant-table-tbody > tr > td {
+  /* background-color: #2a9d8f;  */
+  background-color: #1d3557;
+  color: white; /* Row text color */
+  height: auto; /* Prevents collapse */
+}
+
+/* Optional: Hover effect for rows */
+.custom-table .ant-table-tbody > tr:hover > td {
+  background-color: #3e6868 !important; /* Keep the same row color on hover */
+  color: white !important; /* Ensure the text color remains the same */
+}
+
+/* Background color for pagination if needed */
+.custom-table .ant-pagination {
+  background-color: #183350; /* Same as table background */
+  color: white;
+}
+
+
+
