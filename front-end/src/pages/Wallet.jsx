@@ -6,6 +6,7 @@ import Gift from '../assets/gift-box.png';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import PagenotFound from '../components/PageNotFound';
 import TransferModel from '../components/TransferModel';
+import DepositModel from '../components/DepositModel';
 
 const Wallet = () => {
   const [balanceUSD, setBalanceUSD] = useState(0);
@@ -14,6 +15,7 @@ const Wallet = () => {
 
   const { userData, getSellerData } = useFormData();
   const [showTrnsferFund, setShowTrnsferFund] = React.useState(false);
+  const [depositFund,setDepositFund] = React.useState(false);
 
   useEffect(() => {
     getSellerData();
@@ -72,7 +74,7 @@ const Wallet = () => {
             </div>
             <div
               className={`bg-gray-700 px-3 py-1 rounded-md hover:text-[#458ab3] ${activeSection === 'Deposit' ? 'text-[#458ab3]' : ''}`}
-              onClick={() => setActiveSection('Deposit')}
+              onClick={() => setDepositFund(true)}
             >
               Deposit
             </div>
@@ -207,6 +209,13 @@ const Wallet = () => {
             <TransferModel
             showTrnsferFund={showTrnsferFund}
             setShowTrnsferFund={setShowTrnsferFund}
+            />
+          )}
+
+          {depositFund && (
+            <DepositModel
+            depositFund={depositFund}
+            setDepositFund={setDepositFund}
             />
           )}
 
