@@ -1,24 +1,4 @@
-// import { createSlice } from '@reduxjs/toolkit'; // Fix the import
-
-// const usersSlice = createSlice({ // Fix createSlice
-//     name: "User",
-//     initialState: {
-//         user: null
-//     },
-//     reducers: {
-//         SetUser(state, action) {
-//             state.user = action.payload;
-//         }
-//     }
-// });
-
-// // Export the actions correctly
-// export const { SetUser } = usersSlice.actions; // Fix usersSlice.actions
-
-// // Export the reducer
-// export default usersSlice.reducer;
 import { createSlice } from '@reduxjs/toolkit';
-
 
 export const usersSlice = createSlice({
   name: "User",
@@ -33,9 +13,14 @@ export const usersSlice = createSlice({
     SetWalletData: (state, action) => {
       state.walletData = action.payload;
     },
+    // Add the reducer for updating balanceUSD
+    updateBalanceUSD: (state, action) => {
+      if (state.user) {
+        state.user.balanceUSD = action.payload; // Update balanceUSD in user data
+      }
+    },
   },
 });
 
-export const { SetWalletData, SetUser } = usersSlice.actions;
+export const { SetWalletData, SetUser, updateBalanceUSD } = usersSlice.actions;
 export default usersSlice.reducer;
-

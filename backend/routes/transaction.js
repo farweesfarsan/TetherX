@@ -6,6 +6,9 @@ const Wallet = require('../models/Wallet');
 const { authMiddleware } = require('../middleware/authMiddleware');
 const moment = require('moment');
 
+const stripe = require('stripe')(process.env.stripe_key);
+const { v4: uuidv4 } = require('uuid');
+
 
 // transfer money from one account to another
 router.post('/transfer-fund', async (req, res) => {
@@ -71,6 +74,99 @@ router.post('/transfer-fund', async (req, res) => {
       message: 'Transaction failed',
       data: error.message,
       success: false,
+    });
+  }
+});
+// transfer money from one account to another
+router.post('/deposit-fund', async (req, res) => {
+  try {
+    const { token, amount, userId } = req.body;
+    
+    // Ensure that token, amount, and userId are provided
+    if (!token || !amount || !userId) {
+      return res.status(400).send({
+        message: 'Invalid token, amount, or user ID',
+        success: false
+      });
+    }
+
+    // Create customer in Stripe
+    const customer = await stripe.customers.create({
+      email: token.email,
+      source: token.id
+    });
+
+    // Create a charge in Stripe
+    const charge = await stripe.charges.create(
+      {
+        amount: amount * 100,  // Stripe expects amount in cents
+        currency: 'usd',
+        customer: customer.id,
+        receipt_email: token.email,
+        description: 'Deposited to Wallet'
+      },
+      {
+        idempotencyKey: uuidv4(),  // Ensures idempotency in retries
+      }
+    );
+
+    // Check if the charge was successful
+    if (charge.status === 'succeeded') {
+      // Create a new transaction and save to the database
+      const newTransaction = new Transaction({
+        sender: userId,  // Use the userId from the request
+        receiver: userId,
+        amount: amount,
+        references: 'stripe deposit',
+        receiverName: 'farwees',  // Adjust this as needed (dynamically fetch?)
+        type: "deposit",
+        status: "success"
+      });
+      await newTransaction.save();
+
+      // Increase the user's balance
+      await User.findByIdAndUpdate(userId, {
+        $inc: { balanceUSD: amount },
+      });
+
+      return res.status(200).send({
+        message: 'Transaction successful',
+        data: newTransaction,
+        success: true
+      });
+    } else {
+      // Handle non-successful Stripe charge statuses
+      return res.status(400).send({
+        message: `Transaction not successful, charge status: ${charge.status}`,
+        data: charge,
+        success: false
+      });
+    }
+  } catch (error) {
+    console.error('Transaction error:', error);
+
+    // Handle Stripe-specific errors more gracefully
+    if (error.type === 'StripeCardError') {
+      return res.status(400).send({
+        message: 'Stripe card error',
+        data: error.message,
+        success: false
+      });
+    }
+
+    if (error.type === 'StripeInvalidRequestError') {
+      return res.status(400).send({
+        message: 'Invalid request to Stripe',
+        data: error.message,
+        success: false
+      });
+    }
+
+    // General error handler
+    return res.status(500).send({
+      message: 'Transaction failed',
+      data: error.message || 'Unknown error',
+      success: false
     });
   }
 });
@@ -204,5 +300,64 @@ router.post('/get-today-transaction',authMiddleware,async(req,res)=>{
     });
   }
 })
+
+// router.post('/deposit-fund',async(req,res)=>{
+//   try {
+//      const {token,amount} = req.body;
+//      // create customer
+//      const customer = await stripe.customers.create({
+//       email:token.email,
+//       source:token.id
+//      })
+
+//      // create a charge
+//      const charge = await stripe.charges.create({
+//       amount:amount,
+//       currency:'usd',
+//       customer:customer.id,
+//       receipt_email:token.email,
+//       description:'Deposited to Wallet'
+//      },{
+//       idempotencyKey: uuidv4(),
+//      }
+//     );
+
+//     // save the transaction
+//     if(charge.status === 'succeeded'){
+//       const newTransaction = new Transaction({
+//         sender:req.body.userId,
+//         receiver:req.body.userId,
+//         amount:amount,
+//         reference:'striper deposit',
+//         type:"deposit",
+//         status:"success"
+//       });
+//       await newTransaction.save();
+//       //increase the user's balance
+
+//       res.send({
+//         message:'Transaction successfull',
+//         data:newTransaction,
+//         success:true
+//       })
+
+//       await User.findByIdAndUpdate(req.body.userId,{
+//         $inc: {balance : amount },
+//       });
+//     }else{
+//       res.send({
+//         message:'Transaction failed',
+//         data:charge,
+//         success:false
+//       });
+//     }
+//   } catch (error) {
+//     res.send({
+//       message:'Transaction failed',
+//       data:charge,
+//       success:false
+//     });
+//   }
+// })
 
 module.exports = router;

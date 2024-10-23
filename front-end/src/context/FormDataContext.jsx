@@ -166,11 +166,27 @@ export const FormDataProvider = ({ children }) => {
     }
   };
 
+  const updateBalanceUSD = (newBalance) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      userData: {
+        ...prevState.userData,
+        balanceUSD: newBalance,
+      },
+    }));
+  };
 
-  
-  
+  const DepositFunds = async({token,amount,userId})=>{
+    try {
+      const {data} = await axios.post('http://localhost:3001/deposit-fund',{token,amount,userId});
+      return data;
+    } catch (error) {
+      return error.response.data;
+    }
+  }
+
   return (
-    <FormDataContext.Provider value={{formData,handleCreateAccount,submitFormData,verifyCode,getSellerData,userData,sellerName,verifyAccount,transferFunds,getAllUserTransaction,getSevenDaysTransaction,getTodayTransaction}}>
+    <FormDataContext.Provider value={{formData,handleCreateAccount,submitFormData,verifyCode,getSellerData,userData,sellerName,verifyAccount,transferFunds,getAllUserTransaction,getSevenDaysTransaction,getTodayTransaction,DepositFunds,updateBalanceUSD}}>
       {children}
     </FormDataContext.Provider>
   );
