@@ -301,63 +301,6 @@ router.post('/get-today-transaction',authMiddleware,async(req,res)=>{
   }
 })
 
-// router.post('/deposit-fund',async(req,res)=>{
-//   try {
-//      const {token,amount} = req.body;
-//      // create customer
-//      const customer = await stripe.customers.create({
-//       email:token.email,
-//       source:token.id
-//      })
 
-//      // create a charge
-//      const charge = await stripe.charges.create({
-//       amount:amount,
-//       currency:'usd',
-//       customer:customer.id,
-//       receipt_email:token.email,
-//       description:'Deposited to Wallet'
-//      },{
-//       idempotencyKey: uuidv4(),
-//      }
-//     );
-
-//     // save the transaction
-//     if(charge.status === 'succeeded'){
-//       const newTransaction = new Transaction({
-//         sender:req.body.userId,
-//         receiver:req.body.userId,
-//         amount:amount,
-//         reference:'striper deposit',
-//         type:"deposit",
-//         status:"success"
-//       });
-//       await newTransaction.save();
-//       //increase the user's balance
-
-//       res.send({
-//         message:'Transaction successfull',
-//         data:newTransaction,
-//         success:true
-//       })
-
-//       await User.findByIdAndUpdate(req.body.userId,{
-//         $inc: {balance : amount },
-//       });
-//     }else{
-//       res.send({
-//         message:'Transaction failed',
-//         data:charge,
-//         success:false
-//       });
-//     }
-//   } catch (error) {
-//     res.send({
-//       message:'Transaction failed',
-//       data:charge,
-//       success:false
-//     });
-//   }
-// })
 
 module.exports = router;
