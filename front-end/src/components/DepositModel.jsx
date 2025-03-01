@@ -104,7 +104,7 @@ const DepositModel = ({ depositFund, setDepositFund }) => {
                   currency='USD'
                   amount={amount * 100} // Stripe expects amount in cents
                   shippingAddress
-                  stripeKey="Stripe_key" // Replace with  actual Stripe key
+                  stripeKey="pk_test_51QBWJ3GKXk4jNXnZqww3UcGVGECG0pOYd8tkiDiAFmP6oQVwVc52QcO7TlsJTA6MbJHmumV4Fj9Pz1InoipTebx200wL6sS9xi" // Replace with  actual Stripe key
                 >
                   <button
                     className="px-8 py-2 rounded-md bg-teal-500 text-white font-bold transition duration-200 hover:bg-white hover:text-black border-2 border-transparent hover:border-teal-500"

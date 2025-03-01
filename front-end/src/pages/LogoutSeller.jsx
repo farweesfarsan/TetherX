@@ -23,7 +23,7 @@ const Logout = () => {
       <div className=' flex flex-row mt-[20px] justify-center gap-4'>
          <Button  variant="contained" onClick={onLogout}>YES</Button>
          <Button  variant="outlined" onClick={()=>{
-           navigate('/buyerDash');
+           navigate('/dashboard');
          }}>Cancel</Button>
       </div>
       

@@ -7,8 +7,8 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import PagenotFound from '../components/PageNotFound';
 import TransferModel from '../components/TransferModel';
 import DepositModel from '../components/DepositModel';
-import {message} from 'antd';
 import axios from "axios";
+import {message} from 'antd';
 
 const Wallet = () => {
   const [balanceUSD, setBalanceUSD] = useState(0);
@@ -21,13 +21,7 @@ const Wallet = () => {
   const [buttenText,setButtonText] = React.useState("USE IT");
   const [loading, setLoading] = useState(false);
   const [depositInfo,setDepositInfo] = useState([]);
-
-  
-
-  useEffect(() => {
-    getSellerData();
-    fetchDepositInfo();
-  }, []);
+  // const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     // Check localStorage on component mount
@@ -77,6 +71,11 @@ const Wallet = () => {
 };
 
   useEffect(() => {
+    getSellerData();
+    fetchDepositInfo();
+  }, []);
+
+  useEffect(() => {
     const fetchWalletData = async () => {
       try {
         setBalanceUSD(userData.balanceUSD);
@@ -118,13 +117,13 @@ const Wallet = () => {
     } catch (error) {
       console.error("Error fetching requests:", error);
       setDepositInfo([]);
-    } 
-     
+    }    
   };
- 
-useEffect(() => {
-  console.log("Updated depositInfo state:", depositInfo);
-}, [depositInfo]);
+  
+  useEffect(() => {
+    console.log("Updated depositInfo state:", depositInfo);
+  }, [depositInfo]);
+  
 
   return (
     <div>
@@ -152,7 +151,7 @@ useEffect(() => {
           </div>
 
           {/* Navigation Section */}
-          <div className='ml-[900px] flex flex-row gap-10 mt-[30px] text-[15px] cursor-pointer'>
+          <div className='ml-[800px] flex flex-row gap-10 mt-[30px] text-[15px] cursor-pointer'>
             <div
               className={`bg-gray-700 px-3 py-1 rounded-md hover:text-[#458ab3] ${activeSection === 'Overview' ? 'text-[#458ab3]' : ''}`}
               onClick={() => setActiveSection('Overview')}
@@ -171,6 +170,12 @@ useEffect(() => {
             >
               Deposit
             </div>
+            <div
+              className={`bg-gray-700 px-3 py-1 rounded-md hover:text-[#458ab3] ${activeSection === 'Withdraw' ? 'text-[#458ab3]' : ''}`}
+              onClick={() => setActiveSection('Withdraw')}
+            >
+              Withdraw
+            </div>
           </div>
 
           {/* Conditionally Rendered Sections */}
@@ -184,13 +189,14 @@ useEffect(() => {
                 </div>
                 <div className=' absolute ml-[-30px] mt-[10px] text-gray-300'>{balanceLKR} LKR</div>
 
-                <div className='ml-[750px] mt-[-70px] text-[20px] font-medium'>Wow! You Got</div>
+                <div className='ml-[750px] mt-[-70px] text-[20px] font-medium'>Wow! You Will Get</div>
                 <div className='ml-[720px] text-[30px] font-medium'><span className='text-[#3e67c0]'>FREE</span><span className='ml-[10px]'>100USDT</span></div>
                 <div className=' absolute w-[200px] mt-[1px] ml-[720px]'>
                   <div className='shadow-[0px_4px_25px_rgba(130,_155,_239,_0.48)] rounded-lg bg-gradient-to-r from-[#49c8b7] py-2 to-[#446ae8] flex items-center justify-center opacity-80 hover:cursor-pointer'>
-                  <span className='text-white flex items-center text-[15px] font-medium' onClick={handleClick} disabled={loading}>
+                    <span className='text-white flex items-center text-[15px] font-medium' onClick={handleClick} disabled={loading}>
                     {buttenText}
                     </span>
+                    
                   </div>
                 </div>
                 <div className='absolute ml-[550px] mt-[-90px]'>
@@ -202,7 +208,7 @@ useEffect(() => {
               </div>
 
               <div className='ml-[250px] text-[12px] mt-[20px] text-[#888686] uppercase font-medium'>
-                Deposit History
+                Deposits History
               </div>
               <div className='absolute mt-[10px] ml-[250px] border-[0.5px] border-solid border-gray-600 box-border w-[1000px] h-[270px]'>
                 <div className='ml-[20px] mt-[5px]'>
@@ -265,12 +271,6 @@ useEffect(() => {
               <p className='text-white'>Deposit Section</p>
             </div>
           )}
-
-          {activeSection === 'Withdraw' && (
-            <div className='px-12 py-12 ml-[250px] mt-[-20px] w-[1000px]'>
-              <p className='text-white'>Withdraw Section</p>
-            </div>
-          )}
         </>
       ) : (
         <PagenotFound />
@@ -280,5 +280,3 @@ useEffect(() => {
 }
 
 export default Wallet;
-
-

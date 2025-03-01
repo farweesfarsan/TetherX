@@ -48,7 +48,7 @@ const RegistrationSchema = Yup.object().shape({
       if(role === "Seller"){
          // Navigate to the home page
           navigate('/Dashboard');
-      }else{
+      }else if(role === "Buyer"){
           navigate('/buyerDash');
       } 
      } catch (error) {

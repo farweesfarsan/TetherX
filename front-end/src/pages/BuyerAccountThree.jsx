@@ -11,7 +11,7 @@ const CreateYourAccountThree = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const { formData, submitFormData,verifyCode } = useFormData();
+  const { formData, submitFormData,verifyCode,submitFormDatForBuyer } = useFormData();
   const [currentStep, setCurrentStep] = useState(3);
   const [verificationCode, setVerificationCode] = useState(["", "", "", ""]);
   const [timeLeft, setTimeLeft] = useState(6 * 60);
@@ -59,7 +59,7 @@ const CreateYourAccountThree = () => {
     if (code === verifyCode) {
       try {
         console.log("Submitting form data: ",formData);
-        await submitFormData();
+        await submitFormDatForBuyer();
         alert("Account created successfully!");
         navigate('/');
       } catch (error) {
@@ -81,7 +81,7 @@ const CreateYourAccountThree = () => {
       <div className="w-full min-h-screen p-5 flex flex-col justify-between items-center relative md:p-10">
         <div className="flex flex-col justify-start items-center text-center">
           <h1 className="font-roboto text-[24px] md:text-[26px] font-semibold leading-9 text-[#829BEF] mt-[-5px]">
-            Create Your Account
+            Create Your Buyer Account
           </h1>
           <p className="font-roboto text-[13px] md:text-[16px] font-normal leading-5 text-white mt-[-10px]">
             Your Secure Bridge to the World of USDT

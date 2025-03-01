@@ -9,18 +9,29 @@ import { MdCurrencyRupee } from "react-icons/md";
 import DoubleArrowIcon from '@mui/icons-material/DoubleArrow';
 import { GiStarsStack } from "react-icons/gi";
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import { FaDollarSign, FaHourglassHalf, FaCrown } from "react-icons/fa";
+import { FcSalesPerformance } from "react-icons/fc";
 import Stars from '../assets/stars.png';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import { useFormData } from "../context/FormDataContext";
 import PagenotFound from '../components/PageNotFound';
+import {message} from 'antd';
+import { Table } from "antd";
+const { Column } = Table;
+
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  // const [userData, setUserData] = useState();
-  // const [walletId,setWalletId] = useState();
   const [rate,setRate] = useState(null);
   const [time,setTime] = useState(null);
+  const [requests, setRequests] = useState([]);
+  const [buyerBreakdown, setBuyerBreakdown] = useState([]);
+  const [totalPendingAmount, setTotalPendingAmount] = useState(0);
+  const [totalTransactionAmount, setTotalTransactionAmount] = useState(0);
+
+  
+    
 
   const {userData,getSellerData} = useFormData();
 
@@ -35,11 +46,49 @@ const seconds = dates.getUTCSeconds();
 
 const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')} ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} UTC`;
 
-// const getCookieValue = (name) => {
-//   const value = `; ${document.cookie}`;
-//   const parts = value.split(`; ${name}=`);
-//   if (parts.length === 2) return parts.pop().split(';').shift();
-// };
+
+useEffect(() => {
+  fetchRequests();
+},[]);
+
+const fetchRequests = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("Token not found");
+      return;
+    }
+    const response = await axios.get("http://localhost:3001/getRequests", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    // Format the createdAt field
+    const formattedData = response.data.data.map(request => ({
+      ...request,
+      formattedDate: new Date(request.createdAt).toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true,
+      }),
+    }));
+
+    setRequests(formattedData);
+  } catch (error) {
+    console.error("Error fetching requests:", error);
+    setRequests([]);
+  }
+};
+
+useEffect(() => {
+  console.log("Updated requests state:", requests);
+}, [requests]);  // This runs whenever requests state updates
+ // Log whenever requests update
+
+ 
 
 
 useEffect(() => {
@@ -67,24 +116,46 @@ useEffect(() => {
   };
 }, []);
 
+
+useEffect(() => {
+  const fetchPerformanceData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+               if(!token){
+                console.log("Token not found");
+                return
+              }
+      const response = await axios.get('http://localhost:3001/getTotalTransactionInfo',{
+        headers:{ Authorization:`Bearer ${token}`}
+      });
+       console.log("Performance data",response.data);
+      if (response.data.success) {
+        setBuyerBreakdown(response.data.buyerBreakdown);
+        setTotalPendingAmount(response.data.totalPendingAmount);
+        setTotalTransactionAmount(response.data.totalTransactionAmount);
+      }
+
+      console.log("Buyer Breakdown",buyerBreakdown);
+      console.log("total pending amount",totalPendingAmount);
+      console.log("totla transaction amount",totalTransactionAmount);
+    } catch (error) {
+      console.error("Error fetching performance data:", error);
+    }
+  };
+
+  fetchPerformanceData();
+}, []);
   return (
     <div>
       {userData ? (
           
           <>
           <div className="flex items-center ml-[600px] mt-[-17px]">
-    
-              <div className="ml-[450px] shadow-[0px_4px_31px_rgba(130,_155,_239,_0.48)] rounded-full bg-gradient-to-r from-[#49c8b7] to-[#446ae8] flex items-center justify-center py-1 px-2 opacity-80">
-                <NotificationsNoneIcon className="text-white"/>
-                <div className='flex flex-col items-start justify-start pt-[5px] px-0 pb-0'>
-                  <a className='[text-decoration:none] relative font-medium text-[inherit] inline-block min-w-[14px]'>15</a>
-                </div>
-              </div>
-              <div className="flex items-center ml-4">
+              <div className="flex items-center ml-[500px]">
                 <div className='w-[40px] h-[40px] md:w-[40px] md:h-[40px] bg-slate-400 rounded-full'>
                   <img src={Profile} alt="Profile_Image" className='w-full h-full rounded-full object-cover' />
                 </div>
-                <p className='ml-[10px]'>{userData ? (userData.firstName) : 'null'}</p>
+                <p className='ml-[10px]'>{userData ? (userData.firstName +' '+ userData.lastName) : 'null'}</p>
               </div>
             </div>
     
@@ -162,9 +233,7 @@ useEffect(() => {
                      GOLD MEMBER
                  </div>
                </div>
-               {/* <GiStarsStack
-                className='absolute top-[59px] left-[301px] w-[89px] h-[57px] object-cover text-[#FFDF00]'
-               />      */}
+              
                <img
                  src={Stars}
                  alt="stars"
@@ -173,182 +242,84 @@ useEffect(() => {
           </div>
           <div className='absolute top-[290px] left-[920px] w-[424px] h-[235px]'>
       <div className='top-[0px] left-[0px] uppercase font-medium opacity-[0.5] text-sm'>
-        Recent Requests
+        Recent Requests from Buyers
       </div>
+
       <div className='top-[33px] left-[0px] w-[424px] flex flex-col items-start justify-start gap-2 text-xs'>
-        <div className='self-stretch rounded bg-[#183350] w-full flex flex-row items-start justify-start p-2 relative gap-2'>
-          <AccountBoxIcon className='text-white w-16 relative rounded-sm h-[60px] object-cover z-[0]' />
-          <div className='flex flex-col items-start justify-start gap-[1.5] z-[1]'>
-            <div className='relative font-medium'>Nadeesha Gamage</div>
-            <div className='relative text-3xs text-gray-400'>
-              <span>Request</span>
-              <span className='font-medium text-m3-white'>40 $</span>
-              <span className='whitespace-pre-wrap '>from you. Request ID is #987134</span>
+{requests.length > 0 ? (
+  requests.map((req, index) => (
+    <div key={index} className='self-stretch rounded bg-[#183350] w-full flex flex-row items-start justify-start p-2 relative gap-2'>
+       <AccountBoxIcon className='text-white w-16 relative rounded-sm h-[60px] object-cover z-[0]' />
+       <div className='flex flex-col items-start justify-start gap-[1.5] z-[1]'>
+       <p className='relative font-medium'>From: {req.user?.firstName} {req.user?.lastName}</p>
+       <p className='whitespace-pre-wrap absolute top-[20px]'>Req id: {req._id}</p>
+       <div className='relative text-3xs text-gray-400'>
+       <span>Request Amount:</span>
+       <span className='font-medium text-m3-white'>{req.amount}$</span>
+       
+       </div>
+       </div>
+       <div className='w-[200px] absolute !m-[0] top-[8px] left-[230px] text-3xs text-gray-400 inline-block z-[2]'>
+       {req.formattedDate}
             </div>
-          </div>
-          <div className='w-[100px] absolute !m-[0] top-[8px] left-[310px] text-3xs text-gray-400 inline-block z-[2]'>
-            JUL 24 | 03:10 PM 
-          </div>
-          <div className='!m-[0] absolute top-[40px] left-[354px] rounded-sm border-success border-[2px] border-solid border-[#258b4d] flex flex-row items-center justify-center py-1 px-3 z-[3] text-success'>
-            <div className='relative leading-[130%] font-medium text-[#258b4d]'>Accept</div>    
-          </div>
-          <div className='!m-[0] absolute top-[44px] left-[282px] rounded flex flex-row items-center justify-center py-1 px-3 z-[4] text-text-headings'>
-            <div className='relative leading-[130%] font-medium '>Medium</div>
-          </div>
-        </div>
-    
-        <div className='self-stretch rounded bg-[#183350] w-full flex flex-row items-start justify-start p-2 relative gap-2'>
-          <AccountBoxIcon className='text-white w-16 relative rounded-sm h-[60px] object-cover z-[0]' />
-          <div className='flex flex-col items-start justify-start gap-[1.5] z-[1]'>
-            <div className='relative font-medium'>Pavan Silva</div>
-            <div className='relative text-3xs text-gray-400'>
-              <span>Request</span>
-              <span className='font-medium text-m3-white'>40 $</span>
-              <span className='whitespace-pre-wrap '>from you. Request ID is #760981</span>
-            </div>
-          </div>
-          <div className='w-[100px] absolute !m-[0] top-[8px] left-[310px] text-3xs text-gray-400 inline-block z-[2]'>
-            JUL 24 | 05:45 PM 
-          </div>
-          <div className='!m-[0] absolute top-[40px] left-[354px] rounded-sm border-success border-[2px] border-solid border-[#258b4d] flex flex-row items-center justify-center py-1 px-3 z-[3] text-success'>
-            <div className='relative leading-[130%] font-medium text-[#258b4d]'>Accept</div>    
-          </div>
-          <div className='!m-[0] absolute top-[44px] left-[282px] rounded flex flex-row items-center justify-center py-1 px-3 z-[4] text-text-headings'>
-            <div className='relative leading-[130%] font-medium '>Medium</div>
-          </div>
-        </div>
-    
-        <div className='self-stretch rounded bg-[#183350] w-full flex flex-row items-start justify-start p-2 relative gap-2'>
-          <AccountBoxIcon className='text-white w-16 relative rounded-sm h-[60px] object-cover z-[0]' />
-          <div className='flex flex-col items-start justify-start gap-[1.5] z-[1]'>
-            <div className='relative font-medium'>Farwees Farsan</div>
-            <div className='relative text-3xs text-gray-400'>
-              <span>Request</span>
-              <span className='font-medium text-m3-white'>40 $</span>
-              <span className='whitespace-pre-wrap '>from you. Request ID is #123456</span>
-            </div>
-          </div>
-          <div className='w-[100px] absolute !m-[0] top-[8px] left-[310px] text-3xs text-gray-400 inline-block z-[2]'>
-            JUL 23 | 02:30 PM 
-          </div>
-          <div className='!m-[0] absolute top-[40px] left-[354px] rounded-sm border-success border-[2px] border-solid border-[#258b4d] flex flex-row items-center justify-center py-1 px-3 z-[3] text-success'>
-            <div className='relative leading-[130%] font-medium text-[#258b4d]'>Accept</div>    
-          </div>
-          <div className='!m-[0] absolute top-[44px] left-[282px] rounded flex flex-row items-center justify-center py-1 px-3 z-[4] text-text-headings'>
-            <div className='relative leading-[130%] font-medium '>Medium</div>
-          </div>
-        </div>
-        <div className='self-stretch rounded bg-[#183350] w-full flex flex-row items-start justify-start p-2 relative gap-2'>
-          <AccountBoxIcon className='text-white w-16 relative rounded-sm h-[60px] object-cover z-[0]' />
-          <div className='flex flex-col items-start justify-start gap-[1.5] z-[1]'>
-            <div className='relative font-medium'>Farwees Farsan</div>
-            <div className='relative text-3xs text-gray-400'>
-              <span>Request</span>
-              <span className='font-medium text-m3-white'>40 $</span>
-              <span className='whitespace-pre-wrap '>from you. Request ID is #123456</span>
-            </div>
-          </div>
-          <div className='w-[100px] absolute !m-[0] top-[8px] left-[310px] text-3xs text-gray-400 inline-block z-[2]'>
-            JUL 23 | 02:30 PM 
-          </div>
-          <div className='!m-[0] absolute top-[40px] left-[354px] rounded-sm border-success border-[2px] border-solid border-[#258b4d] flex flex-row items-center justify-center py-1 px-3 z-[3] text-success'>
-            <div className='relative leading-[130%] font-medium text-[#258b4d]'>Accept</div>    
-          </div>
-          <div className='!m-[0] absolute top-[44px] left-[282px] rounded flex flex-row items-center justify-center py-1 px-3 z-[4] text-text-headings'>
-            <div className='relative leading-[130%] font-medium '>Medium</div>
-          </div>
-        </div>
-        {/* Repeat this structure for each request */}
+            <div
+              className={`!m-[0] absolute top-[40px] left-[335px] rounded-sm border-[2px] border-solid flex flex-row items-center justify-center py-1 px-3 z-[3] ${
+              req.status === 'Pending' ? 'border-[#FFA500] text-[#FFA500]' : 
+              req.status === 'Accepted' ? 'border-[#258b4d] text-[#258b4d]' : 
+              req.status === 'Rejected' ? 'border-[#FF0000] text-[#FF0000]' : ''
+             }`}
+            >
+  <div className="relative leading-[130%] font-medium">
+    {req.status}
+  </div>
+  </div>
+      
+       </div>
+       ))
+       ) : (
+        <p>No requests found</p>
+      )}  
           </div> 
         </div> 
-    
-        <div className='uppercase text-[12px] absolute top-[420px] left-[270px] font-medium text-gray-400'>Recent Transaction</div>
-        <div className='ml-[300px] mt-[-240px]'>
-          <div className='mt-[-110px] ml-[-50px]'>
-              <div className='w-[620px] bg-[#19303f]'>
-               <table className='w-full text-[12px] rounded-[7px]'>
-                 <thead className='bg-gray-600'>
-                   <tr className='text-[#47b5d1]'>
-                     <th className='px-4 py-1 text-center'>Id</th>
-                     <th className='px-4 py-1 text-center'>Date</th>
-                     <th className='px-4 py-1 text-center'>Seller</th>
-                     <th className='px-4 py-1 text-center'>Account (USD)</th>
-                     <th className='px-4 py-1 text-center'>Account (LKR)</th>
-                     <th className='px-4 py-1 text-center'>Status</th>
-                   </tr>
-                 </thead>
-                <tbody className='text-gray-200'>
-                   <tr>
-                     <td className='px-4 py-2 text-center'>#1234</td>
-                     <td className='px-4 py-2 text-center'>08.06.2024</td>
-                     <td className='px-4 py-2 text-center'>Jenny Bell</td>
-                     <td className='px-4 py-2 text-center'>30 USD</td>
-                     <td className='px-4 py-2 text-center'>90,000 LKR</td>
-                     <td className='px-4 py-2 text-center'>
-                     <span className="bg-[#3CB371] bg-opacity-[0.4] text-[#47df86] py-1 px-3 rounded-md shadow-md">
-                      Active</span>
-                        
-                     </td>
-                   </tr>
-    
-                   <tr>
-                     <td className='px-4 py-2 text-center'>#1235</td>
-                     <td className='px-4 py-2 text-center'>08.06.2024</td>
-                     <td className='px-4 py-2 text-center'>Jenny Bell</td>
-                     <td className='px-4 py-2 text-center'>30 USD</td>
-                     <td className='px-4 py-2 text-center'>90,000 LKR</td>
-                     <td className='px-4 py-2 text-center'>
-                      <span className='bg-[#CD853F] bg-opacity-[0.4] text-[#e2953c] py-1 px-2 rounded-md shadow-md'>
-                         Pending
-                      </span>
-                     </td>
-                    </tr>
-    
-                    <tr>
-                     <td className='px-4 py-2 text-center'>#1236</td>
-                     <td className='px-4 py-2 text-center'>08.06.2024</td>
-                     <td className='px-4 py-2 text-center'>Jenny Bell</td>
-                     <td className='px-4 py-2 text-center'>30 USD</td>
-                     <td className='px-4 py-2 text-center'>90,000 LKR</td>
-                     <td className='px-4 py-2 text-center'>
-                       <span className='bg-[#B22222] bg-opacity-[0.4] text-[#e03b3b] py-1 px-2 rounded-md shadow-md'>
-                            Declined
-                       </span>
-                     </td>
-                    </tr>
-    
-                     <tr>
-                      <td className='px-4 py-2 text-center'>#1236</td>
-                      <td className='px-4 py-2 text-center'>08.06.2024</td>
-                      <td className='px-4 py-2 text-center'>Jenny Bell</td>
-                      <td className='px-4 py-2 text-center'>30 USD</td>
-                      <td className='px-4 py-2 text-center'>90,000 LKR</td>
-                      <td className='px-4 py-2 text-center'>
-                       <span className="bg-[#3CB371] bg-opacity-[0.4] text-[#47df86] py-1 px-3 rounded-md shadow-md">
-                          Active
-                       </span>
-                      </td>
-                      </tr>
-    
-                      <tr>
-                      <td className='px-4 py-2 text-center'>#1236</td>
-                      <td className='px-4 py-2 text-center'>08.06.2024</td>
-                      <td className='px-4 py-2 text-center'>Jenny Bell</td>
-                      <td className='px-4 py-2 text-center'>30 USD</td>
-                      <td className='px-4 py-2 text-center'>90,000 LKR</td>
-                      <td className='px-4 py-2 text-center'>
-                       <span className="bg-[#3CB371] bg-opacity-[0.4] text-[#47df86] py-1 px-3 rounded-md shadow-md">
-                          Active
-                       </span>
-                      </td>
-                      </tr>
-               </tbody>
-            </table>
-          </div>
-              </div>
+        <div className='uppercase text-[12px] absolute top-[420px] left-[270px] font-medium text-gray-400'>Performance & Sales History</div>
+            <div className='absolute top-[450px] left-[250px] grid grid-cols-1 sm:grid-cols-3 gap-2 p-2'>
+            <div className="bg-green-100 shadow-lg rounded-lg p-3 flex items-center justify-between">
+             <div>
+               <h2 className="text-[20px] font-semibold text-gray-700">Total Sales</h2>
+               <p className="text-[17px] font-bold text-green-600">$ {totalTransactionAmount}</p>
+               <p className="text-[15px] text-gray-500">+12% from last month</p>
              </div>
-             </>
+                <FcSalesPerformance className="text-green-500 text-8xl" />
+             </div>
+  
+             <div className="bg-orange-100 shadow-lg rounded-lg p-3 flex items-center justify-between">
+             <div>
+               <h2 className="text-[20px] font-semibold text-gray-700">Pending Requests</h2>
+               <p className="text-[17px] font-bold text-orange-600">$ {totalPendingAmount}</p>
+               <p className="text-[15px] text-gray-500">Processing transactions</p>
+             </div>
+             <FaHourglassHalf className="text-orange-500 text-4xl" />
+           </div>
+          
 
+         {buyerBreakdown.length > 0 ? (
+           <div>
+             {buyerBreakdown.map((buyer) => (
+              <div key={buyer.userId} className='bg-blue-100 shadow-lg rounded-lg p-3 flex items-center justify-between'>
+                <div>
+                 <h2 className="text-[20px] font-semibold text-gray-700">Top Buyer</h2>
+                 <p className="text-[17px] font-bold text-blue-600">{buyer.name}</p>
+                 <p className="text-[15px] font-bold text-blue-600">Saled Amount: ${buyer.totalSpent}</p>
+                </div>
+                  <FaCrown className="text-yellow-500 text-4xl" />
+                </div>
+               ))}
+             </div>
+      ) : (
+        <p>No buyer data available.</p>
+      )}      
+   </div>  
+        </>
       ):(
         <PagenotFound/>
       )}

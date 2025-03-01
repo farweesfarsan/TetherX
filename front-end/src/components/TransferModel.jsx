@@ -27,7 +27,7 @@ const TransferModel = ({ showTrnsferFund, setShowTrnsferFund }) => {
       try {
         dispatch(ShowLoading());
         const balance = userData.balanceUSD;
-        console.log("balance is",balance);
+        // console.log("balance is",balance);
         dispatch(SetWalletData(balance));
         dispatch(HideLoading());
       } catch (error) {
@@ -75,13 +75,12 @@ const TransferModel = ({ showTrnsferFund, setShowTrnsferFund }) => {
   
       dispatch(ShowLoading());
       const response = await verifyAccount({ receiver: receiverId });
-
+  
       if (response.success) {
-        setIsVerified(true); // Change to boolean true
+        setIsVerified(true);
         message.success("Account verified");
-      
       } else {
-        setIsVerified(false); // Change to boolean false
+        setIsVerified(false);
         message.error(response.message || "Account verification failed");
       }
   
@@ -164,9 +163,12 @@ const TransferModel = ({ showTrnsferFund, setShowTrnsferFund }) => {
 
         
         {isVerified === true && (
-          <div className="text-[#2a9942] mt-[-30px]">
-            <h1 className="text-sm"><span className='text-[#ffffff]'>Account Holder :{" "}</span>{sellerName}</h1>
-          </div>
+         <div className="text-[#2a9942] mt-[-30px]">
+           <h1 className="text-sm">
+             <span className='text-[#ffffff]'>Account Holder:{" "}</span>
+             {sellerName} {/* Display sellerName here */}
+          </h1>
+         </div>
         )}
 
         {isVerified === false && (

@@ -18,11 +18,13 @@ const CreateYourAcoountOne = () => {
   const navigate = useNavigate();
 
   const handleContinue = () => {
-    if (selectedRole) {
+    if (selectedRole == 'buyer') {
       setCurrentStep(2);
-      navigate("/step-two");
-    } else {
-      setError("Please select a role to continue.");
+      navigate("/step-buyer-two");
+    } else if(selectedRole == 'seller'){
+      setCurrentStep(2);
+      navigate("/step-two")
+      // setError("Please select a role to continue.");
     }
   };
 

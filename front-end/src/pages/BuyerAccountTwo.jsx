@@ -35,7 +35,7 @@ const RegistrationSchema = Yup.object().shape({
 const CreateYourAccountTwo = () => {
   const { setCurrentStep } = useStep();
   const navigate = useNavigate();
-  const { handleCreateAccount } = useFormData();
+  const { handleBuyerAccount } = useFormData();
 
   useEffect(() => {
     
@@ -60,7 +60,7 @@ const CreateYourAccountTwo = () => {
       <div className="w-full h-full max-w-lg p-5 flex flex-col justify-center items-center relative md:p-10">
         <div className="flex flex-col justify-start items-center mb-5">
           <h1 className="font-roboto mt-[-10px] text-[24px] md:text-[25px] font-semibold leading-9 text-[#829BEF] text-center">
-            Create Your Seller Account
+            Create Your Buyer Account
           </h1>
           <p className="font-roboto text-[13px] md:text-[13px] font-normal leading-5 text-white text-center mt-[-10px]">
             Your Secure Bridge to the World of USDT
@@ -80,7 +80,7 @@ const CreateYourAccountTwo = () => {
             }}
             validationSchema={RegistrationSchema}
             onSubmit={(values) => {
-              handleCreateAccount(values);
+              handleBuyerAccount(values);
             }}
           >
             {({ handleChange, values }) => (
