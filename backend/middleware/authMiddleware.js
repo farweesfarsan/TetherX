@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Seller = require('../models/Seller');
+const Buyer = require('../models/Buyer');
 
 const authMiddleware = async (req, res, next) => {
     const authHeader = req.headers.authorization;
@@ -23,16 +24,25 @@ const authMiddleware = async (req, res, next) => {
             return res.status(404).json({ error: "User not found" });
         }
 
-        // If the user's role is 'Seller', fetch the seller data and walletId
+        // Fetch additional data based on role
         if (user.role === 'Seller') {
             const seller = await Seller.findById(user.sellers);
             if (!seller) {
                 return res.status(404).json({ error: "Seller not found" });
             }
-            req.seller = seller; // Attach seller data to the request object
-            req.sellerWalletId = seller.walletId; // Attach the walletId to the request object
+            req.seller = seller;
+            req.sellerWalletId = seller.walletId;
             req.firstName = seller.firstName;
             req.lastName = seller.lastName;
+            
+        } else if (user.role === 'Buyer') {
+            const buyer = await Buyer.findById(user.buyers);
+            if (!buyer) {
+                return res.status(404).json({ error: "Buyer not found" });
+            }
+            req.buyer = buyer;
+            req.firstName = buyer.firstName;
+            req.lastName = buyer.lastName;
         }
 
         req.user = user;

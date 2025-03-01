@@ -26,22 +26,25 @@ require('./models/Seller');
 require('./models/User');
 require('./models/Wallet');
 require('./models/Transaction');
+require('./models/Request');
 
 
-const buyerRoutes = require('./routes/buyerRoutes');
+// const buyerRoutes = require('./routes/buyerRoutes');
 const sellerRoutes = require('./routes/sellerRoutes');
 // const walletRoutes = require('./routes/walletRoutes');
 const userRoutes = require('./routes/userRoutes');
 const walletsRoutes = require('./routes/walletsRoutes');
 const transactionRoutes = require('./routes/transaction');
+const requestRoutes = require('./routes/requestRoute');
 
 
-app.use(buyerRoutes);
+// app.use(buyerRoutes);
 app.use(sellerRoutes);
 // app.use(walletRoutes);
 app.use(userRoutes);
 app.use(walletsRoutes);
 app.use(transactionRoutes);
+app.use(requestRoutes);
 
 app.use((req, res, next) => {
     const error = new Error('Route not Found');

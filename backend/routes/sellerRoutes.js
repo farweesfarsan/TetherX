@@ -51,6 +51,35 @@ router.post('/addNewSeller', async (req, res) => {
     }
 });
 
+router.get('/getAllSellers', async (req, res) => {
+    try {
+        const sellers = await User.find({ role: 'Seller' })
+            .populate({
+                path: 'walletId',
+                select: 'balanceUSD' // Only include balanceUSD from the Wallet schema
+            })
+            .populate({
+                path: '_id', // Assuming the User _id corresponds to the Seller's ObjectId
+                model: 'Seller', // Specify the Seller schema
+                select: '_id' // Only include the ObjectId from the Seller schema
+            })
+            .select('firstName lastName email'); // Select only necessary fields from User
+
+        // Format the response to include only necessary fields
+        const formattedSellers = sellers.map(seller => ({
+            firstName: seller.firstName,
+            lastName: seller.lastName,
+            email: seller.email,
+            balanceUSD: seller.walletId.balanceUSD,
+            sellerId: seller._id // Seller ObjectId
+        }));
+
+        res.send(formattedSellers);
+    } catch (error) {
+        console.log('Error fetching sellers:', error);
+        res.status(500).send({ error: error.message });
+    }
+});
 router.post('/userLogin', async(req,res)=>{
     const {email,password} = req.body;
 

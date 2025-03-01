@@ -2,9 +2,11 @@ const router = require('express').Router();
 const Transaction = require('../models/Transaction');
 const User = require('../models/User');
 const Seller = require('../models/Seller');
+const Buyer = require('../models/Buyer');
 const Wallet = require('../models/Wallet');
 const { authMiddleware } = require('../middleware/authMiddleware');
 const moment = require('moment');
+const mongoose = require("mongoose");
 
 const stripe = require('stripe')(process.env.stripe_key);
 const { v4: uuidv4 } = require('uuid');
@@ -77,6 +79,7 @@ router.post('/transfer-fund', async (req, res) => {
     });
   }
 });
+
 // transfer money from one account to another
 router.post('/deposit-fund', async (req, res) => {
   try {
@@ -173,8 +176,9 @@ router.post('/deposit-fund', async (req, res) => {
 
 
 // verify the receiver account number
-router.post('/verify-account', async (req, res) => {
+router.post('/verify-account',authMiddleware, async (req, res) => {
   try {
+      
     console.log("Receiver ID:", req.body.receiver); // Log the receiver ID being received
     
     // Find the user by receiver ID
@@ -187,7 +191,7 @@ router.post('/verify-account', async (req, res) => {
       if (seller) {
         res.send({
           message: "Account verified",
-          data: {
+           data: {
             user: user,
             sellerName: seller.firstName // Returning the seller's name
           },
@@ -300,6 +304,42 @@ router.post('/get-today-transaction',authMiddleware,async(req,res)=>{
     });
   }
 })
+
+router.get('/getDepositedData',authMiddleware,async(req, res) => {
+  try {
+    // Fetch all transactions where the sender is the logged-in user
+    const transactions = await Transaction.find({ sender: req.user._id });
+
+    // Check if transactions exist
+    if (!transactions || transactions.length === 0) {
+      return res.status(404).json({
+        message: "No transactions found",
+        success: false,
+      });
+    }
+
+    // Filter transactions where sender and receiver are the same
+    const filteredTransactions = transactions.filter(tx => tx.sender.toString() === tx.receiver.toString());
+
+    return res.status(200).json({
+      success: true,
+      data: filteredTransactions,
+      
+    });
+  } catch (error) {
+    console.error("Error fetching deposited data:", error);
+    res.status(500).json({
+      message: "Internal server error",
+      success: false,
+    });
+  }
+});
+
+
+
+
+
+
 
 
 

@@ -29,7 +29,12 @@ const userSchema = mongoose.Schema({
 
     balanceUSD:{
         type:Number,
-        default:100
+        default:0.0,
+    },
+
+    hasClaimedBonus:{
+        type:Boolean,
+        default:false
     }
 });
 

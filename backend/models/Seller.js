@@ -28,6 +28,11 @@ const sellerSchema = mongoose.Schema({
         type:String,
         ref:"Wallet",
        
+    },
+
+    user: {  // Add this field if not already present
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
     }
    
 });
